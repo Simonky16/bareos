@@ -95,17 +95,19 @@ Developing Bareos
 
 ### Compiling
 
-dpkg-dev installieren
-/bareos/.travis/travis_before_install.sh letzte zeile entferneń, nur als referenz nutzen (alles manuell)
-dpkg-checkbuilddeps in core
-/core/cmake .sh nur die argumente abspeichern +  argumente der zweiten zeile später (iwas server install)
-sudo aptitude install alle auf einmal
-/core/cmakelist ist optionen
-cat /debian/rules, kopieren als cmake.sh
-source cmake.sh
-cmake configure_common
-make -j4
-test
+
+    dpkg-dev installieren
+    /bareos/.travis/travis_before_install.sh letzte zeile entferneń, nur als referenz nutzen (alles manuell)
+    dpkg-checkbuilddeps in core
+    /core/cmake .sh nur die argumente abspeichern +  argumente der zweiten zeile später (iwas server install)
+    sudo aptitude install alle auf einmal
+    /core/cmakelist ist optionen
+    cat /debian/rules, kopieren als cmake.sh
+    source cmake.sh
+    cmake configure_common
+    make -j4
+    test
+
 
 ### Debugging
 
