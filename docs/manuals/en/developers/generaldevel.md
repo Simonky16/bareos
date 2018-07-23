@@ -139,7 +139,7 @@ You can find the flags used for compiling rpm-packages in ```platforms/packaging
 **This process will include a local installation of Bareos, which is useful for development**
 
 ##### Compiling and locally installing Bareos
-```bash
+```
 #!/bin/bash
 export CFLAGS="-g -Wall"
 export CXXFLAGS="-g -Wall"
