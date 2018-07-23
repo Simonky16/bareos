@@ -139,7 +139,7 @@ You can find the flags used for compiling rpm-packages in ```platforms/packaging
 **This process will include a local installation of Bareos, which is useful for development**
 
 ##### Compiling and locally installing Bareos
-```
+```b
 #!/bin/bash
 export CFLAGS="-g -Wall"
 export CXXFLAGS="-g -Wall"
@@ -159,8 +159,8 @@ cmake  .. \
   -Dbaseport=8001 \
   -DCMAKE_INSTALL_PREFIX:PATH=$DESTDIR \
   -Dprefix=$DESTDIR \
-  -Dworking-dir=$DESTDIR/var/ \
-  -Dpid-dir=$DESTDIR/var/ \
+  -Dworkingdir=$DESTDIR/var/ \
+  -Dpiddir=$DESTDIR/var/ \
   -Dconfigtemplatedir=$DESTDIR/lib/defaultconfigs \
   -Dsbin-perm=755 \
   -Dpython=yes \
