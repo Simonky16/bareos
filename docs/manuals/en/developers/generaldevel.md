@@ -95,12 +95,12 @@ Developing Bareos
 
 ### Compiling
 
-There are several ways to locally compile (and install) Bareos
+There are several ways to locally compile (and install) Bareos.
 
 #### General steps
 
 ```
-sudo apt install git #TODO: muss das rein?
+sudo apt install git
 git clone https://github.com/bareos/bareos
 sudo apt install dpkg-dev #notwendig für später dpkg-checkbuilddeps
 sudo apt install devscripts # notwendig später für dch
@@ -108,7 +108,7 @@ sudo apt install fakeroot
 cd bareos/core
 dpkg-checkbuilddeps
 ```
-You then need to install all packages that dpkg-checkbuilddeps lists as required
+You then need to install all packages that dpkg-checkbuilddeps lists as required.
 
 #### Option one: Local creation of Debian-packages from the cloned sourcecode
 
@@ -136,7 +136,7 @@ You can find the flags used for compiling rpm-packages in ```platforms/packaging
 #### Option three: Compiling and installing Bareos locally
 
 **Disclaimer: This process makes use of development-oriented compiler flags. If you want to compile Bareos to be similar to a Bareos compiled with production intent, please refer to option two.**
-**This process will include a local installation of Bareos, which is useful for development**
+**This process will include a local installation of Bareos, which is useful for development.**
 
 ##### Compiling and locally installing Bareos
 ```b
@@ -206,7 +206,7 @@ cp -a lib/defaultconfigs/* etc/bareos/
 ```
 
 You will have to replace ```dbdriver = "XXX_REPLACE_WITH_DATABASE_DRIVER_XXX" ``` with ```sqlite3``` or other.
-The file can be found at ```bareos/etc/bareos/bareos-dir.d/catalog/MyCatalog.conf```
+The file can be found at ```bareos/etc/bareos/bareos-dir.d/catalog/MyCatalog.conf```.
 
 ```
 # sets up server
