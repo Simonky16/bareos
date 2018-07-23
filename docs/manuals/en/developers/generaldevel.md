@@ -95,19 +95,138 @@ Developing Bareos
 
 ### Compiling
 
+There are several ways to locally compile (and install) Bareos
 
-    dpkg-dev installieren
-    /bareos/.travis/travis_before_install.sh letzte zeile entferneń, nur als referenz nutzen (alles manuell)
-    dpkg-checkbuilddeps in core
-    /core/cmake .sh nur die argumente abspeichern +  argumente der zweiten zeile später (iwas server install)
-    sudo aptitude install alle auf einmal
-    /core/cmakelist ist optionen
-    cat /debian/rules, kopieren als cmake.sh
-    source cmake.sh
-    cmake configure_common
-    make -j4
-    test
+#### General steps
 
+```
+sudo apt install git #TODO: muss das rein?
+git clone https://github.com/bareos/bareos
+sudo apt install dpkg-dev #notwendig für später dpkg-checkbuilddeps
+sudo apt install devscripts # notwendig später für dch
+sudo apt install fakeroot 
+cd bareos/core
+dpkg-checkbuilddeps
+```
+You then need to install all packages that dpkg-checkbuilddeps lists as required
+
+#### Option one: Local creation of Debian-packages from the cloned sourcecode
+
+```
+# prepares the changelog for Debian
+cp -a platforms/packaging/bareos.changes debian/changelog
+# You need to manually change the version number in debian/changelog.
+# gets current version number from src/include/version.h and includes it
+VERSION=$(sed -n -r 's/#define VERSION "(.*)"/\1/p'  src/include/version.h)
+dch -v $VERSION "Switch version number"
+# creates Debian-packages and stores them in ..
+fakeroot debian/rules binary
+
+```
+
+#### Option two: Compiling Bareos with the same compilation flags as used in production
+
+##### Debian-packages
+You can find the flags used for compiling for Debian in ```debian/rules```.
+
+##### Rpm-packages
+You can find the flags used for compiling rpm-packages in ```platforms/packaging/bareos.spec```.
+
+
+#### Option three: Compiling and installing Bareos locally
+
+**Disclaimer: This process makes use of development-oriented compiler flags. If you want to compile Bareos to be similar to a Bareos compiled with production intent, please refer to option two.**
+**This process will include a local installation of Bareos, which is useful for development**
+
+##### Compiling and locally installing Bareos
+```bash
+#!/bin/bash
+export CFLAGS="-g -Wall"
+export CXXFLAGS="-g -Wall"
+
+DESTDIR=~/tmp/bareos
+
+mkdir $DESTDIR
+
+CMAKE_BUILDDIR=cmake-build
+
+mkdir ${CMAKE_BUILDDIR}
+pushd ${CMAKE_BUILDDIR}
+
+cmake  .. \
+  -DCMAKE_VERBOSE_MAKEFILE=ON \
+  -DBUILD_SHARED_LIBS:BOOL=ON \
+  -Dbaseport=8001 \
+  -DCMAKE_INSTALL_PREFIX:PATH=$DESTDIR \
+  -Dprefix=$DESTDIR \
+  -Dworking-dir=$DESTDIR/var/ \
+  -Dpid-dir=$DESTDIR/var/ \
+  -Dconfigtemplatedir=$DESTDIR/lib/defaultconfigs \
+  -Dsbin-perm=755 \
+  -Dpython=yes \
+  -Dsmartalloc=yes \
+  -Ddisable-conio=yes \
+  -Dreadline=yes \
+  -Dbatch-insert=yes \
+  -Ddynamic-cats-backends=yes \
+  -Ddynamic-storage-backends=yes \
+  -Dscsi-crypto=yes \
+  -Dlmdb=yes \
+  -Dndmp=yes \
+  -Dipv6=yes \
+  -Dacl=yes \
+  -Dxattr=yes \
+  -Dpostgresql=yes \
+  -Dmysql=yes \
+  -Dsqlite3=yes \
+  -Dtcp-wrappers=yes \
+  -Dopenssl=yes \
+  -Dincludes=yes
+
+popd
+
+echo "cd ${CMAKE_BUILDDIR} && make && make install"
+```
+As already specified, you will also have to do the following:
+```
+cd $CMAKE_BUILDDIR
+make
+make install
+```
+
+##### Configuring Bareos
+
+Before you can successfully use your local installation, it requires additional configuration.
+
+```
+# move to local installation directory after make install
+cd $DESTDIR
+# copy configuration files, only neccesary on initial install
+cp -a lib/defaultconfigs/* etc/bareos/
+```
+
+You will have to replace ```dbdriver = "XXX_REPLACE_WITH_DATABASE_DRIVER_XXX" ``` with ```sqlite3``` or other.
+The file can be found at ```bareos/etc/bareos/bareos-dir.d/catalog/MyCatalog.conf```
+
+```
+# sets up server
+lib/bareos/scripts/create_bareos_database 
+lib/bareos/scripts/make_bareos_tables 
+lib/bareos/scripts/grant_bareos_privileges
+# creates bareos database (requires sqlite3 in case of sqlite3 installation)
+cd lib/bareos/scripts/create_bareos_database
+```
+
+##### Launching your local Bareos installation
+```
+# launches director in debug mode in foreground
+sbin/bareos-dir -f -d100
+# displays status of bareos daemons and launches them
+lib/bareos/scripts/bareos status
+lib/bareos/scripts/bareos start
+# launches bconsole to connect to director
+bin/bconsole
+```
 
 ### Debugging
 
